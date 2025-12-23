@@ -42,7 +42,7 @@ jobs:
 
       # 6. Upload processed data sebagai artifact
       - name: Upload preprocessed dataset
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: preprocessed-dataset
           path: |
