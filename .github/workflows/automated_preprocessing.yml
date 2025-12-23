@@ -1,0 +1,44 @@
+name: Automated Preprocessing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  preprocess-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scikit-learn joblib matplotlib
+
+      - name: Run preprocessing script
+        run: |
+          python preprocessing/automate_oryzasativa.py
+
+      - name: Move processed data to preprocessing folder
+        run: |
+          mv train_preprocessing.csv preprocessing/
+          mv test_preprocessing.csv preprocessing/
+
+      - name: Commit processed data
+        run: |
+          git config --global user.name "${{ secrets.GH_USERNAME }}"
+          git config --global user.email "${{ secrets.GH_EMAIL }}"
+          git add preprocessing/train_preprocessing.csv preprocessing/test_preprocessing.csv
+          git commit -m "Auto update preprocessed dataset" || echo "No changes to commit"
+          git push
