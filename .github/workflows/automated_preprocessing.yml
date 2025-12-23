@@ -13,33 +13,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
+      # 3. Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pandas numpy scikit-learn joblib matplotlib
 
+      # 4. Run preprocessing script
       - name: Run preprocessing script
         run: |
           python preprocessing/automate_oryzasativa.py
 
+      # 5. Move processed data (opsional, kalau script sudah simpan di folder tertentu)
       - name: Move processed data
         run: |
           mv train_preprocessing.csv preprocessing/
           mv test_preprocessing.csv preprocessing/
 
+      # 6. Commit & Push processed data
       - name: Commit processed data
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "actions@github.com"
           git add preprocessing/train_preprocessing.csv preprocessing/test_preprocessing.csv
-          git commit -m 'Update processed dataset' || echo "No changes to commit"
-          git push
-
+          git commit -m "Update preprocessed data" || echo "No changes to commit"
+          git push https://x-access-token:${GH_PAT}@github.com/oryzava/Eksperimen_SML_OryzaSativa.git HEAD:main
