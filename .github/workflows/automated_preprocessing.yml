@@ -40,13 +40,11 @@ jobs:
           mv train_preprocessing.csv preprocessing/
           mv test_preprocessing.csv preprocessing/
 
-      # 6. Commit & push hasil preprocessing
-      - name: Commit processed data
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "actions@github.com"
-          git add preprocessing/train_preprocessing.csv preprocessing/test_preprocessing.csv
-          git commit -m "Update preprocessed data" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/oryzava/Eksperimen_SML_OryzaSativa.git HEAD:main
+      # 6. Upload processed data sebagai artifact
+      - name: Upload preprocessed dataset
+        uses: actions/upload-artifact@v3
+        with:
+          name: preprocessed-dataset
+          path: |
+            preprocessing/train_preprocessing.csv
+            preprocessing/test_preprocessing.csv
