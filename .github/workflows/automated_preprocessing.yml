@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
@@ -30,15 +30,16 @@ jobs:
         run: |
           python preprocessing/automate_oryzasativa.py
 
-      - name: Move processed data to preprocessing folder
+      - name: Move processed data
         run: |
           mv train_preprocessing.csv preprocessing/
           mv test_preprocessing.csv preprocessing/
 
       - name: Commit processed data
         run: |
-          git config --global user.name "${{ secrets.GH_USERNAME }}"
-          git config --global user.email "${{ secrets.GH_EMAIL }}"
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add preprocessing/train_preprocessing.csv preprocessing/test_preprocessing.csv
-          git commit -m "Auto update preprocessed dataset" || echo "No changes to commit"
+          git commit -m 'Update processed dataset' || echo "No changes to commit"
           git push
+
